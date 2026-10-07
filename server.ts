@@ -212,9 +212,25 @@ Do NOT give formal legal advice; present educational guidance and key questions 
         }
       }
     });
+    const resultText = response.text;
 
-    const resultText = response.text || "{}";
-    const jsonResult = JSON.parse(resultText);
+    if (!resultText || !resultText.trim()) {
+      return res.status(502).json({
+        error: "AI service returned an empty response."
+      });
+    }
+
+    let jsonResult;
+
+    try {
+      jsonResult = JSON.parse(resultText);
+    } catch {
+      console.error("AI returned malformed JSON.");
+      return res.status(502).json({
+        error: "AI service returned an invalid response."
+      });
+    }
+
     res.json(jsonResult);
   } catch (err: any) {
     console.error("Error analyzing contract:", err);
