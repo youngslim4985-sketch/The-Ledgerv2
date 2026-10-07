@@ -234,7 +234,7 @@ Do NOT give formal legal advice; present educational guidance and key questions 
     res.json(jsonResult);
   } catch (err: any) {
     console.error("Error analyzing contract:", err);
-    res.status(500).json({ error: err.message || "Failed to analyze contract with AI." });
+    res.status(500).json({ error: "Failed to analyze contract with AI. Please try again." });
   }
 });
 
