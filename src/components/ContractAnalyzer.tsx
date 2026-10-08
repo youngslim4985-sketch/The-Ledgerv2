@@ -85,6 +85,7 @@ export const ContractAnalyzer: React.FC<ContractAnalyzerProps> = ({
   const [isCustomText, setIsCustomText] = useState<boolean>(false);
   const [analysis, setAnalysis] = useState<ContractAnalysis>(SAMPLE_CONTRACTS[0].analysis);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [analysisFailed, setAnalysisFailed] = useState<boolean>(false);
   
   // Upload State
   const [isDragging, setIsDragging] = useState<boolean>(false);
@@ -135,6 +136,8 @@ export const ContractAnalyzer: React.FC<ContractAnalyzerProps> = ({
 
   const handleRunAIAnalysis = async (textToAnalyze: string, dealCategory?: string) => {
     setIsLoading(true);
+    setAnalysisFailed(false);
+    setUploadError(null);
     try {
       const response = await fetch("/api/analyze-contract", {
         method: "POST",
@@ -146,7 +149,16 @@ export const ContractAnalyzer: React.FC<ContractAnalyzerProps> = ({
       });
 
       if (!response.ok) {
-        throw new Error("Analysis failed");
+        let serverMessage = "Analysis failed. Please try again.";
+        try {
+          const errBody = await response.json();
+          if (errBody?.error) serverMessage = errBody.error;
+        } catch {
+          // ignore parse failure; use fallback
+        }
+        setUploadError(serverMessage);
+        setAnalysisFailed(true);
+        return;
       }
 
       const result: ContractAnalysis = await response.json();
@@ -163,6 +175,8 @@ export const ContractAnalyzer: React.FC<ContractAnalyzerProps> = ({
       setRecentDocs((prev) => [newDoc, ...prev.filter((d) => d.name !== newDoc.name)]);
     } catch (err) {
       console.error("AI Analysis Error:", err);
+      setUploadError("Network error. Please check your connection and try again.");
+      setAnalysisFailed(true);
     } finally {
       setIsLoading(false);
       setUploadProgress(null);
@@ -610,6 +624,7 @@ export const ContractAnalyzer: React.FC<ContractAnalyzerProps> = ({
       </div>
 
       {/* AI ANALYSIS RESULTS SECTION */}
+      {!analysisFailed && (
       <div className="bg-slate-900/90 rounded-3xl p-6 sm:p-8 border border-slate-800 shadow-2xl space-y-8">
 
         {/* ANALYSIS HEADER & RISK SCORE GAUGE */}
@@ -963,6 +978,7 @@ export const ContractAnalyzer: React.FC<ContractAnalyzerProps> = ({
         </div>
 
       </div>
+      )}
 
       {/* SAMPLE CONTRACTS GRID SECTION */}
       <div ref={sampleSectionRef} className="space-y-6 pt-4">
