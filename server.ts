@@ -1,3 +1,5 @@
+
+import {validateAnalysis} from "./src/lib/validateAnalysis";
 import express from "express";
 import path from "path";
 import dotenv from "dotenv";
@@ -230,8 +232,16 @@ Do NOT give formal legal advice; present educational guidance and key questions 
         error: "AI service returned an invalid response."
       });
     }
+const validation = validateAnalysis(jsonResult);
 
-    res.json(jsonResult);
+if (validation.ok ===false) {
+   console.error("AI response failed validation:",  validation.reason);
+   return res.status(502).json({
+     error: "AI service return an incomplete rewsponse."
+   });
+} 
+
+res.json(jsonResult);
   } catch (err: any) {
     console.error("Error analyzing contract:", err);
     res.status(500).json({ error: "Failed to analyze contract with AI. Please try again." });
