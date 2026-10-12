@@ -10,7 +10,7 @@ dotenv.config();
 
 const app = express();
 const PORT = 3000;
-
+const DEMO_MODE = process.env.DEMO_MODE === "true";
 app.use(express.json({ limit: "10mb" }));
 
 // Initialize Gemini SDK lazily / safely
@@ -53,7 +53,41 @@ app.post("/api/analyze-contract", async (req, res) => {
         error: `contractText exceeds the maximum allowed length of ${MAX_CONTRACT_TEXT_LENGTH.toLocaleString()} characters. Please shorten the document and try again.`
       });
     }
-
+    if (DEMO_MODE) {
+      return res.json({
+        demoMode: true,
+        title: "Hackathon Demo — Sample Music Contract Analysis",
+        dealType: dealType || "Sample Recording Agreement",
+        riskScore: 65,
+        summary: "This is illustrative sample data for demonstrating The Ledger. It is not an analysis of your submitted contract.",
+        plainEnglishTranslation: "DEMO ONLY: This sample illustrates how The Ledger can explain music contract terms. No AI analysis of your uploaded contract was performed.",
+        keyClauses: [],
+        yourResponsibilities: [],
+        otherPartyResponsibilities: [],
+        riskCards: [],
+        recommendations: [
+          "Review who owns the master recordings.",
+          "Check how the advance is recouped.",
+          "Confirm the length and territory of the agreement."
+        ],
+        keyTerms: [],
+        redFlags: [],
+        fairTerms: [],
+        questionsForAttorney: [
+          "Who owns the master recordings?",
+          "How is the advance recouped?",
+          "Can costs be cross-collateralized?",
+          "How long does the agreement last?",
+          "What audit rights do I have?"
+        ],
+        waterfallEstimates: {
+          artistRoyaltyRate: 18,
+          labelShareRate: 82,
+          advanceAmount: 10000,
+          distributionFeeRate: 15
+        }
+      });
+    }
     const ai = getGeminiClient();
     
     // Do not return generic findings as if they came from the user's contract.
