@@ -1,8 +1,8 @@
 # 🎵 The Ledger
 
-AI-powered contract analysis for artists, producers, creators, and independent music professionals.
+Music-rights education and contract-analysis tools for artists, producers, creators, and independent music professionals.
 
-The Ledger helps creators understand contracts before they sign by using AI to identify risky clauses, explain legal language in plain English, and provide an easy-to-understand risk score.
+THE LEDGER helps creators explore contract terms, understand common risks, and prepare questions for independent legal counsel. Its contract-analysis interface supports a clearly labeled demo mode; live AI analysis is not verified for this submission.
 
 ---
 
@@ -13,7 +13,7 @@ Many independent artists sign agreements without fully understanding their right
 The Ledger was built to make contract review more accessible by providing:
 
 - 📄 PDF contract upload
-- 🤖 AI-powered clause analysis
+- 🤖 Contract-analysis interface with clearly labeled demo results
 - ⚠️ Risk scoring
 - 💬 Plain-English explanations
 - 📊 Contract insights dashboard
@@ -23,7 +23,7 @@ The Ledger was built to make contract review more accessible by providing:
 ## Features
 
 - Upload music contracts
-- AI contract parsing
+- Contract-analysis workflow with demo-mode support
 - Fairness & risk scoring
 - Revenue and royalty analysis
 - Interactive dashboard
@@ -37,8 +37,8 @@ The Ledger was built to make contract review more accessible by providing:
 - TypeScript
 - Vite
 - Tailwind CSS
-- AI-powered document analysis
-- AMD ROCm / PyTorch GPU acceleration (Hackathon Edition)
+- Optional live AI integration (not verified for this submission)
+- Node.js and TypeScript backend with automated validation tests
 
 ---
 
@@ -61,6 +61,10 @@ cd The-Ledgerv2
 
 npm install
 
+# Configure free demonstration mode in .env
+cp .env.example .env
+# Set DEMO_MODE=true in .env
+
 npm run dev
 ```
 
@@ -74,11 +78,17 @@ The Ledger empowers artists to make informed decisions before signing agreements
 
 ---
 
-## Hackathon
+## IBM Bob Hackathon — Modernize What Matters
 
-Built for the AMD Radeon AI Hackathon.
+THE LEDGER is being submitted to the IBM Bob Hackathon.
 
-Leverages AMD ROCm and AI acceleration to improve document analysis performance.
+Documented engineering improvements include:
+- Stronger validation of contract-analysis responses.
+- 21 automated validator tests.
+- Explicit handling when live AI is not configured.
+- A demo mode that works without paid AI access.
+
+**Demo limitation:** When `DEMO_MODE=true`, contract analysis displays illustrative sample data; it does not analyze the uploaded contract. Live AI analysis must not be assumed to be working.
 
 ---
 
