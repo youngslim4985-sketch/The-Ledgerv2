@@ -1,3 +1,4 @@
+
 import React from "react";
 import { TabType } from "../types";
 import {
@@ -31,25 +32,23 @@ export const Header: React.FC<HeaderProps> = ({
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-20">
           
+          
           {/* Brand Identity */}
           <div className="flex items-center space-x-3">
-            <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-amber-500 via-amber-600 to-amber-700 flex items-center justify-center text-slate-950 font-black text-xl shadow-md shadow-amber-500/10 tracking-wider border border-amber-400/30">
+            <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-amber-400 via-amber-500 to-amber-700 flex items-center justify-center text-slate-950 font-black text-xl shadow-md shadow-amber-500/20 tracking-wider border border-amber-300/40">
               TL
             </div>
             <div>
-              <div className="flex items-center space-x-2">
-                <span className="text-xl font-extrabold tracking-tight text-slate-100 font-mono">
-                  THE LEDGER
-                </span>
-                <span className="px-2 py-0.5 text-xs font-semibold rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/30">
-                  v1.0
-                </span>
+              <div className="text-xl font-extrabold tracking-tight text-slate-100 font-mono">
+                THE LEDGER
               </div>
-              <p className="text-xs text-amber-200/80 font-medium tracking-wide">
-                Music Rights Education Platform • <span className="italic text-slate-400">Know your rights before you sign.</span>
+              <p className="text-xs text-amber-300 font-medium tracking-wide">
+                Know your rights before you sign.
               </p>
             </div>
           </div>
+
+              
 
           {/* Navigation Tabs */}
           <nav className="hidden md:flex items-center space-x-1 bg-slate-900/80 p-1.5 rounded-xl border border-slate-800">
