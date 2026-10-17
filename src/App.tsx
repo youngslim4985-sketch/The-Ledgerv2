@@ -60,6 +60,21 @@ export default function App() {
           onToggleDevMode={handleToggleDevMode}
         />
 
+        {/* Homepage Hero Banner */}
+        {activeTab === "analyzer" && (
+          <section
+            aria-label="THE LEDGER introduction"
+            className="w-full overflow-hidden bg-[#080807] border-b border-amber-500/20"
+          >
+            <img
+              src="/images/ledger-hero.png"
+              alt="THE LEDGER — Know Your Deal. Own Your Future."
+              className="block w-full h-auto max-h-[560px] object-contain mx-auto"
+              fetchPriority="high"
+            />
+          </section>
+        )}
+
         {/* Main Workspace View */}
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           {activeTab === "analyzer" && (
