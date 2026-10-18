@@ -33,7 +33,7 @@ assumed.
 | 3 Real extraction | blocked | the same key. This is the section the budget note says never to cut. |
 | 4 Honest no | ready once the server is up | the refusal is decided in the browser, so it needs the app running but not the key. Film it in the same sitting as section 3 and in the same window, or the framing will not match. |
 | 5 How Bob was used | **ready** | both documents exist on `james/modernization-log`. |
-| 6 Verification | **ready** | all six suites now run in one checkout on `james/integration`. The two-branch workaround below is obsolete. |
+| 6 Verification | **ready** | all eight suites now run in one checkout on `james/integration`. The two-branch workaround below is obsolete. |
 | 7 Close | **shot 2026-10-18** | filmed against the live deployment at http://65.108.146.243/. Shows the app, the Rights Graph and the Revenue Waterfall, then the end card. |
 
 The key is not something that can be set for you. It is a credential and it has

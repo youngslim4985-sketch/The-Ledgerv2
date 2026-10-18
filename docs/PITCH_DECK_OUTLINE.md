@@ -60,10 +60,10 @@ review and discarded.
 we noticed because we were checking, and we threw the work away. That is what
 depth of adoption looks like.*
 
-**6. Where Bob was wrong.** Five claims that did not survive checking, as a
+**6. Where Bob was wrong.** Three claims that did not survive checking, as a
 table of what Bob said, what we found, and the outcome: the model-does-not-exist
-claim (twice), the JSON.parse placement, the lockfile count, the overstated
-privacy claim, and the incomplete library plan.
+claim (raised twice), the JSON.parse placement, and the lockfile count. Two more
+were marked still unverified rather than accepted or dismissed.
 *Notes: the criterion asks whether Bob was core to the workflow, not whether Bob
 was right. Five corrections in a written log prove we read its output instead of
 pasting it.*
@@ -94,11 +94,12 @@ underneath it, and the word `undefined` printed into an artist's PDF.
 *Notes: do not claim Bob found these. It did not.*
 
 **10. The evidence.** 182 automated checks across eight suites where the baseline
-had none, 10 log entries, 5 Bob claims corrected, 4 defects found in review.
+had none, 10 log entries, 3 Bob claims corrected, 4 defects found in review.
 Every gate shown failing on a deliberately broken build before being trusted.
 *Notes: the plant-proven line is the quality argument and the likeliest
-technical question. The six suites are the upload rules, the share text, CI coverage, the validator review,
-and the validator itself.*
+technical question. The eight suites are the upload rules, upload regressions, the
+share text, CI coverage, the analysis contract, the AI error mapping, credential
+resolution, and the validator itself.*
 
 **11. Learnings and next steps.** Learned: the dangerous failure is a plausible
 answer, not a crash; Bob opened the work and people closed it; freeze first.
@@ -138,9 +139,9 @@ the video script.
 | figure | source |
 |---|---|
 | 182 automated checks | re-measured on `james/integration` 2026-10-13 by running each suite: 35 `test:upload` + 45 `test:aierror` + 28 `test:aiauth` + 22 `test:analysis` + 21 `test` (validator) + 15 `test:regression` + 10 `test:share` + 6 `test:ci`. Re-counted 2026-10-17; the earlier 139 omitted `test:regression` and `test:aiauth`. |
-| 6 suites | the six `test` / `test:*` scripts in `package.json`, every one of which `ci.yml` runs. `test:ci` asserts that CI runs each, and it failed twice during the merge as new scripts arrived, which is how the gap was found. |
+| **8** suites | the six `test` / `test:*` scripts in `package.json`, every one of which `ci.yml` runs. `test:ci` asserts that CI runs each, and it failed twice during the merge as new scripts arrived, which is how the gap was found. |
 | 10 log entries | `docs/IBM_BOB_MODERNIZATION_LOG.md`, counted by `grep -c "^## Entry"`. Entry 10 records that the Workspace org forbids API keys. |
-| 5 Bob claims corrected | log entries 3 and 4 |
+| **3** Bob claims corrected | entry 3 names three incorrect claims: the model name, `JSON.parse` placement, the lockfile count. Entry 4 shows the model claim raised a second time. Two further claims were recorded as **still unverified** rather than accepted. The deck says three corrected plus two unverified, because that is what the log can show. |
 | 4 defects found in review | log entries 5, 6, 8 and 9, counted by the `Defect found` line in each |
 | 6 refusals | the upload rules in `src/lib/uploadDecision.ts` |
 
