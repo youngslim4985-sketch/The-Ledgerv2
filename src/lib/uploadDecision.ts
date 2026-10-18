@@ -83,7 +83,7 @@ export function judgeError(errName: string): Decision {
  * THE ONE QUESTION THE RESULTS SECTION MUST ASK.
  *
  * On bob/pdf-extraction the analysis panel renders unconditionally, and
- * `analysis` is initialised to SAMPLE_CONTRACTS[0].analysis. So an artist who
+ * `analysis` is initialised to the default sample's analysis. So an artist who
  * uploads a scanned 360 deal is correctly told "No extractable text found" and
  * is then shown, directly beneath it, a complete risk score and clause
  * breakdown — of a sample Employment Agreement.

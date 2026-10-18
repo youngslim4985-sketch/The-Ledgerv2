@@ -79,7 +79,7 @@ cannot read the document it says so.*
 > pure functions". Three of the five had been copied rather than moved, with the
 > inline originals still running, so the tests for them guarded nothing. Found
 > while rehearsing the demo video and fixed on `james/wire-upload-rules`
-> (`65ac98d`); recorded as Entry 8 of the modernization log. The 139 checks are
+> (`65ac98d`); recorded as Entry 8 of the modernization log. The 182 checks are
 > unchanged in number and now exercise the path a user actually takes, which is
 > the stronger claim. **The deck slide carries the corrected wording.**
 
@@ -93,8 +93,8 @@ nor the author caught: a refusal with a sample contract's analysis rendered
 underneath it, and the word `undefined` printed into an artist's PDF.
 *Notes: do not claim Bob found these. It did not.*
 
-**10. The evidence.** 139 automated checks across six suites where the baseline
-had none, 9 log entries, 5 Bob claims corrected, 4 defects found in review.
+**10. The evidence.** 182 automated checks across eight suites where the baseline
+had none, 10 log entries, 5 Bob claims corrected, 4 defects found in review.
 Every gate shown failing on a deliberately broken build before being trusted.
 *Notes: the plant-proven line is the quality argument and the likeliest
 technical question. The six suites are the upload rules, the share text, CI coverage, the validator review,
@@ -137,16 +137,16 @@ the video script.
 
 | figure | source |
 |---|---|
-| 139 automated checks | re-measured on `james/integration` 2026-10-13 by running each suite: 35 `test:upload` + 10 `test:share` + 6 `test:ci` + 21 `test` (validator) + 22 `test:analysis` + 45 `test:aierror`. |
+| 182 automated checks | re-measured on `james/integration` 2026-10-13 by running each suite: 35 `test:upload` + 45 `test:aierror` + 28 `test:aiauth` + 22 `test:analysis` + 21 `test` (validator) + 15 `test:regression` + 10 `test:share` + 6 `test:ci`. Re-counted 2026-10-17; the earlier 139 omitted `test:regression` and `test:aiauth`. |
 | 6 suites | the six `test` / `test:*` scripts in `package.json`, every one of which `ci.yml` runs. `test:ci` asserts that CI runs each, and it failed twice during the merge as new scripts arrived, which is how the gap was found. |
-| 9 log entries | `docs/IBM_BOB_MODERNIZATION_LOG.md`, counted by `grep -c "^## Entry"` |
+| 10 log entries | `docs/IBM_BOB_MODERNIZATION_LOG.md`, counted by `grep -c "^## Entry"`. Entry 10 records that the Workspace org forbids API keys. |
 | 5 Bob claims corrected | log entries 3 and 4 |
 | 4 defects found in review | log entries 5, 6, 8 and 9, counted by the `Defect found` line in each |
 | 6 refusals | the upload rules in `src/lib/uploadDecision.ts` |
 
 > **Re-derived 2026-10-13 against `james/integration`.** Nine branches were merged
 > into one and every figure here was re-measured by running it, not carried over.
-> Checks rose from 68 to 139 and suites from 3 to 6: `main` carried three suites
+> Checks rose from 68 to 182 and suites from 3 to 8: `main` carried three suites
 > the earlier count never included, and the AI error mapping added a sixth. The
 > merge surfaced two further defects, both recorded, both now fixed: `main`'s
 > component had never been hardened for `strictNullChecks`, and `ci.yml` was not

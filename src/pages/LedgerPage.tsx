@@ -15,17 +15,17 @@ import { ReconciliationBadge } from '../components/ReconciliationBadge';
 import { ExportButton } from '../components/ExportButton';
 import { AssumptionPanel } from '../components/AssumptionPanel';
 import { generateContractPDF } from '../utils/pdfGenerator';
-import { SAMPLE_CONTRACTS } from '../data/sampleContracts';
+import { SAMPLE_CONTRACTS, DEFAULT_SAMPLE, DEFAULT_SAMPLE_INDEX } from '../data/sampleContracts';
 import { formatCurrency } from '../lib/formatCurrency';
 import { ShieldCheck, Sparkles, FileText, ArrowRight } from 'lucide-react';
 import { DEAL_TYPE_UNKNOWN } from "../types";
 
 export const LedgerPage: React.FC = () => {
   const [phase, setPhase] = useState<Phase>('ready');
-  const [selectedSampleIndex, setSelectedSampleIndex] = useState<number>(0);
+  const [selectedSampleIndex, setSelectedSampleIndex] = useState<number>(DEFAULT_SAMPLE_INDEX);
   const [exportState, setExportState] = useState<ExportButtonState>('enabled');
 
-  const currentSample = SAMPLE_CONTRACTS[selectedSampleIndex] || SAMPLE_CONTRACTS[0];
+  const currentSample = SAMPLE_CONTRACTS[selectedSampleIndex] || DEFAULT_SAMPLE;
   const analysis = currentSample.analysis;
 
   // Domain Waterfall calculations state derived for Ledger page

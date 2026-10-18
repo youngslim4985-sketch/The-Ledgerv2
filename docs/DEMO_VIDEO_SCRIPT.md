@@ -108,7 +108,7 @@ there is nothing beneath it.** That empty space is the whole shot.
 **On screen:** terminal. Run the suites live. Then show one planted defect going
 red, and the fix going green again.
 
-> Then we checked each other. A hundred and thirty-nine automated checks across six suites,
+> Then we checked each other. A hundred and eighty-two automated checks across eight suites,
 > where the baseline had none. Review found two defects that neither Bob nor the
 > author caught: the phantom analysis you just saw, and the word undefined
 > printed into an artist's PDF. Every gate was shown failing on a deliberately
@@ -126,7 +126,17 @@ suites live on two different branches.
 | validator | `npm run test` | `james/ticket2-verification` | **21 of 21** |
 | types | `npm run lint` | either | silent, which is clean |
 
-**Superseded 2026-10-13: the total is now 139 across six suites, all in one checkout on `james/integration`.** What follows described the pre-merge state. But
+**Superseded 2026-10-13, corrected 2026-10-17: the total is 182 across EIGHT
+suites, all passing in one checkout. Counted 17 Oct from each suite's own
+output: upload 35, aierror 45, aiauth 28, analysis 22, validator 21,
+regression 15, share 10, ci 6.**
+
+**Two earlier figures are withdrawn, and the reason is worth keeping.** The
+deck said 139 across six; a recount said 109 across six. Both were honest
+counts of DIFFERENT sixes — 139 omitted `regression` and `aiauth`, 109 omitted
+`aierror` and `aiauth`. Neither counted the whole set. The error was not
+arithmetic, it was naming a total without naming its members. Assert the set,
+not the number. What follows described the pre-merge state. But
 `npm run test:analysis` does not exist on the branch carrying the upload suite,
 and `npm run test:upload` does not exist on the branch carrying the other two.
 So this section cannot be filmed as one continuous terminal take until an

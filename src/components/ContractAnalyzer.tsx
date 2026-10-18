@@ -6,7 +6,7 @@ import { extractPdfText, PasswordProtectedError } from "../lib/extractPdfText";
 import { mayShowAnalysis, judgeAnalysisResponse, stageLabel, stagePercent, preflight, checkMagic, judgeText, judgeError } from "../lib/uploadDecision";
 import { analysisToText } from "../lib/analysisText";
 import type { Stage } from "../lib/uploadDecision";
-import { SAMPLE_CONTRACTS } from "../data/sampleContracts";
+import { SAMPLE_CONTRACTS, DEFAULT_SAMPLE } from "../data/sampleContracts";
 import { ContractAnalysis, SampleContract, RecentDocument, KeyClause, DEAL_TYPE_UNKNOWN } from "../types";
 import { generateContractPDF } from "../utils/pdfGenerator";
 import {
@@ -66,10 +66,10 @@ export const ContractAnalyzer: React.FC<ContractAnalyzerProps> = ({
   onNavigateToWaterfall,
   onNavigateToRightsGraph
 }) => {
-  const [selectedSample, setSelectedSample] = useState<SampleContract>(SAMPLE_CONTRACTS[0]);
-  const [inputText, setInputText] = useState<string>(SAMPLE_CONTRACTS[0].fullText);
+  const [selectedSample, setSelectedSample] = useState<SampleContract>(DEFAULT_SAMPLE);
+  const [inputText, setInputText] = useState<string>(DEFAULT_SAMPLE.fullText);
   const [isCustomText, setIsCustomText] = useState<boolean>(false);
-  const [analysis, setAnalysis] = useState<ContractAnalysis>(SAMPLE_CONTRACTS[0].analysis);
+  const [analysis, setAnalysis] = useState<ContractAnalysis>(DEFAULT_SAMPLE.analysis);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   
   // Upload State
@@ -82,7 +82,7 @@ export const ContractAnalyzer: React.FC<ContractAnalyzerProps> = ({
   const [uploadError, setUploadError] = useState<string | null>(null);
   // Whether the CURRENT upload has produced an analysis. Without this the
   // results panel keeps rendering `analysis`, which starts life as
-  // SAMPLE_CONTRACTS[0].analysis -- so a refused scan was shown an error and,
+  // the default sample's analysis -- so a refused scan was shown an error and,
   // directly beneath it, a full risk breakdown of a sample Employment Agreement.
   const [hasAnalysedUpload, setHasAnalysedUpload] = useState<boolean>(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -190,6 +190,28 @@ export const ContractAnalyzer: React.FC<ContractAnalyzerProps> = ({
   };
 
   // Handle file upload: pre-flight checks, real extraction, visible errors
+  /**
+   * One exit for every refused upload.
+   *
+   * Each refusal site set the error, and some also cleared the progress and file
+   * name separately. None cleared the text box, which still held the default
+   * sample's text, so an analysis of a document the artist never uploaded sat
+   * one click behind the Run button. That is the ungated results panel again
+   * with one interaction in front of it.
+   *
+   * Re-applied 2026-10-14. The nine-branch merge kept main's component and so
+   * dropped e04d510, which had fixed this once already. Modernization log
+   * Entry 11.
+   */
+  const refuseUpload = (message: string) => {
+    setUploadError(message);
+    setUploadProgress(null);
+    setUploadStage(null);
+    setUploadedFileName(null);
+    setUploadedFileSize(null);
+    setInputText("");
+  };
+
   const handleFileUpload = async (file: File) => {
     if (!file) return;
 
@@ -203,7 +225,7 @@ export const ContractAnalyzer: React.FC<ContractAnalyzerProps> = ({
     // exercised a parallel implementation and could not fail on a real change.
     const verdict = preflight(file.name, file.size, file.type);
     if (verdict.kind === "refuse") {
-      setUploadError(verdict.message);
+      refuseUpload(verdict.message);
       return;
     }
     const isPdf = verdict.route === "pdf";
@@ -213,7 +235,7 @@ export const ContractAnalyzer: React.FC<ContractAnalyzerProps> = ({
       const header = await file.slice(0, 5).text();
       const magic = checkMagic(header);
       if (magic && magic.kind === "refuse") {
-        setUploadError(magic.message);
+        refuseUpload(magic.message);
         return;
       }
     }
@@ -254,11 +276,7 @@ export const ContractAnalyzer: React.FC<ContractAnalyzerProps> = ({
         // 4. Empty / image-only PDF
         const tooShort = judgeText(text);
         if (tooShort && tooShort.kind === "refuse") {
-          setUploadError(tooShort.message);
-          setUploadProgress(null);
-    setUploadStage(null);
-          setUploadedFileName(null);
-          setUploadedFileSize(null);
+          refuseUpload(tooShort.message);
           return;
         }
 
@@ -270,12 +288,8 @@ export const ContractAnalyzer: React.FC<ContractAnalyzerProps> = ({
       // Encrypted / password-protected PDF
       const failure = judgeError(err instanceof Error ? err.name : "UnknownError");
       if (failure.kind === "refuse") {
-        setUploadError(failure.message);
+        refuseUpload(failure.message);
       }
-      setUploadProgress(null);
-    setUploadStage(null);
-      setUploadedFileName(null);
-      setUploadedFileSize(null);
     }
   };
 
