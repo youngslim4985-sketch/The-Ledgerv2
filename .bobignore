@@ -1,0 +1,36 @@
+# .bobignore — what IBM Bob may not read in this repo.
+#
+# gitignore syntax. Bob blocks read_file, write_file, apply_diff and
+# GetSymbolsOverview against these, and blocks execute_command for a predefined
+# list of file-reading commands.
+#
+# WHAT THIS IS NOT: a security boundary. IBM's own docs say insert_content and
+# search_and_replace "might bypass .bobignore rules" on the final write, and the
+# execute_command protection covers only a fixed list of commands. So this is a
+# filter, not a wall. The actual boundary is which folder Bob is opened in:
+# this repo is the hackathon and is the only thing Bob may ever see.
+
+# ── credentials ──────────────────────────────────────────────────────────────
+# .env.example is placeholders only (checked), and Bob needs it to understand
+# the configuration surface. Every other .env is real and is not its business.
+.env*
+!.env.example
+*.key
+*.pem
+
+# ── 360MB that would be read at your expense ─────────────────────────────────
+# The trial carries 40 Bobcoins and every interaction spends them. node_modules
+# is 357MB and dist is 3.5MB of generated output; neither tells Bob anything
+# about this codebase that src/ does not say better.
+node_modules/
+dist/
+build/
+coverage/
+
+# Generated, large, and the npm-vs-Bun question is still open on the team, so
+# neither lockfile is authoritative to reason from.
+bun.lock
+package-lock.json
+
+*.log
+.DS_Store

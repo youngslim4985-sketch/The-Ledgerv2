@@ -46,7 +46,7 @@ export const Header: React.FC<HeaderProps> = ({
                 </span>
               </div>
               <p className="text-xs text-amber-200/80 font-medium tracking-wide">
-                Music Rights Education Platform • <span className="italic text-slate-400">Know your rights before you sign.</span>
+                Music Rights Education Platform • <span className="italic text-slate-400">Know your deal. Own your future.</span>
               </p>
             </div>
           </div>

@@ -1,0 +1,67 @@
+name: CI
+
+# Every push and every pull request. There is nothing expensive here — the
+# whole run is under two minutes — so there is no reason to scope it by path
+# and then discover the scoping was wrong.
+on:
+  push:
+  pull_request:
+
+jobs:
+  verify:
+    name: lint · tests · build
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      # `npm install`, not `npm ci`, and the reason matters:
+      # package-lock.json is in .gitignore ("npm vs Bun is an open team
+      # decision, 3 Oct thread") and bun.lock is what is committed. `npm ci`
+      # requires an npm lockfile and would fail on every run.
+      #
+      # Using bun here instead would quietly settle a decision the team has not
+      # made, so CI uses the toolchain the package.json scripts already name
+      # and leaves the choice to them. If the team settles on Bun, this becomes
+      # `oven-sh/setup-bun` + `bun install --frozen-lockfile` and gains a
+      # locked dependency tree.
+      - name: Install
+        run: npm install --no-audit --no-fund
+
+      # tsc --noEmit. Note `npx tsc` is NOT used anywhere: it resolves to a
+      # decoy package that prints a banner and exits 0 without checking.
+      - name: Type check
+        run: npm run lint
+
+      - name: Upload decision suite
+        run: npm run test:upload
+
+      - name: Share text suite
+        run: npm run test:share
+
+      - name: Analysis contract suite
+        run: npm run test:analysis
+
+      - name: Validator suite
+        run: npm run test
+
+      - name: AI error mapping suite
+        run: npm run test:aierror
+
+      - name: AI credential selection suite
+        run: npm run test:aiauth
+
+      - name: Merge regression suite
+        run: npm run test:regression
+
+      # Asserts CI itself runs every test:* script. Without it this file is
+      # one more hand-written list that silently stops covering things.
+      - name: CI covers every suite
+        run: npm run test:ci
+
+      - name: Build
+        run: npm run build

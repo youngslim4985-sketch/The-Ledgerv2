@@ -1,0 +1,894 @@
+───────────────────── Welcome to ─────────────────────
+░░░░░░░░░█▀▀▀░░░░█░░█░░░░█▀▀▀░░░░█░░░░░░░█░░░░░░░░░░░░
+░░░░░░░░░▀▀▀█░░░░█▀▀█░░░░█▀▀▀░░░░█░░░░░░░█░░░░░░░░░░░░
+─────────────────── Version 2.0.5 ───────────────────
+Did you know?
+You can use `bob -r` to resume a previous session
+Use Shift+Tab to cycle through modes
+How to use Bob Shell? Just ask and it will use the docs tool
+to answer your question
+~/Documents/The Ledger Task/repo/The-Ledgerv2
+Users should independently verify accuracy of AI-generated
+content.
+∙∙∙ Initializing…
+(Press ESC or Ctrl+C to exit)
+─────────────────── Version 2.0.5 ─���─────────────────
+You can use Ctrl+J to write a new line
+∙∙∙ Restoring session…
+●∙∙ Restoring session…
+∙●∙ Restoring session…
+∙●∙ Initializing…
+(ℹ) Logged in as zealousmirror@ethicsgym.com
+❯ Review this app's upload to extraction to analysis
+flow. Read src/components/ContractAnalyzer.tsx,
+src/lib/uploadDecision.ts and src/lib/extraction/.
+Find places where a user would be shown something
+FALSE or MISLEADING instead of an honest error. For
+each give file, line, what the user sees, and what it
+should do. Rank by how badly it misleads. Change no
+files.
+❯ Review this app's upload to extraction to analysis flow.
+Read src/components/ContractAnalyzer.tsx,
+src/lib/uploadDecision.ts and src/lib/extraction/. Find
+places where a user would be shown something FALSE or
+MISLEADING instead of an honest error. For each give
+file, line, what the user sees, and what it should do.
+Rank by how badly it misleads. Change no files.
+Let me read all the relevant files before drawing any co
+nclusions.
+List Files in {path} (executing...)
+Read File {path} (executing...)
+• Let me read all the relevant files before drawing any co
+List Files in /Users/godbody954/Documents/The Ledger  (failed)
+Task/repo/The-Ledgerv2/src/lib/extraction
+Error from tool list_files: Error listing directory
+src/lib/extraction: ENOENT: no such file or directory, scandir
+'/Users/godbody954/Documents/The Ledger
+Task/repo/The-Ledgerv2/src/lib/extraction'
+Read File /Users/godbody954/Documents/The Ledger           (completed)
+Task/repo/The-Ledgerv2/src/components/ContractAnalyzer.tsx
+Let me find the actual file locations.
+Find Files with pattern "{pattern}" (executing...)
+Read File {path} ({range}) (executing...)
+• Let me find the actual file locations.
+Read File /Users/godbody954/Documents/The Ledger            (completed
+Task/repo/The-Ledgerv2/src/components/ContractAnalyzer.tsx  )
+(1000-1100)
+Find Files with pattern "**/extraction/**" (completed)
+No files found
+Find Files with pattern "**/uploadDecision*" (completed)
+Find Files with pattern "src/**/*.ts" (completed)
+19 files
+Find Files with pattern "src/lib/**/*" (completed)
+2 files
+Read File /Users/godbody954/Documents/The Ledger  (completed)
+Task/repo/The-Ledgerv2/src/lib/extractPdfText.ts
+Now I have all the files I need. Let me also check the A
+PI
+PI route to
+PI route to understand what
+PI route to understand what happens
+PI route to understand what happens on
+PI route to understand what happens on analysis
+PI route to understand what happens on analysis failure
+PI route to understand what happens on analysis failure.
+────────────────────────────────────────────────────────��─
+• Now I have all the files I need. Let me also check the A
+Find Files with pattern "app/api/**/*" (completed)
+Find Files with pattern "src/api/**/*" (completed)
+Find Files in {path} with pattern           (executing...)
+"{pattern}"
+Find Files with pattern "**/analyze-contract*" (completed)
+Find Files in /Users/godbody954/Documents/The Ledger    (completed)
+Task/repo/The-Ledgerv2/src with pattern "**/*.{ts,tsx}"
+35 files
+───────────────────────────────────────────────────���──────
+Find Files in /Users/godbody954/Documents/The Ledger       (completed)
+Task/repo/The-Ledgerv2 with pattern "**/*.{ts,tsx,js,mjs}"
+37 files
+Task/repo/The-Ledgerv2/server.ts
+Now I have everything I need. Here is a complete, ranked
+analysis
+analysis.
+• Now I have everything I need. Here is a complete, ranked
+##
+────────────────────────────────���─────────────────────────
+## False / Misleading User-Facing Behaviours — Ranked by
+Severity
+### 🔴 #1 — AI analysis silently fails; stale sample ana
+lysis
+lysis displayed
+lysis displayed as
+lysis displayed as if
+lysis displayed as if it were
+lysis displayed as if it were the
+lysis displayed as if it were theirs
+**File
+File: [`
+File: [`Cont
+File: [ContractAnalyzer.tsx](
+File: [ContractAnalyzer.tsx](src/components/ContractAnal
+y
+yzer.tsx:
+yzer.tsx:164
+File: ContractAnalyzer.tsx (src/components/ContractAnaly
+zer.tsx:164)
+─────────────────────────────────────────────────────���────
+**Lines
+─────────────────────────────────────────────────���────────
+──────────────────────────────────────────────��───────────
+Lines: 164
+──────────────────────────────────────────��───────────────
+Lines: 164–
+─────────────────────────────────────────��────────────────
+Lines: 164–169
+────────────────────────────────────────��─────────────────
+} catch (err) {
+console.error("AI Analysis Error:", err);
+} finally {
+setIsLo
+setIsLoading(false);
+setUp
+setUploadProgress(null
+setUploadProgress(null);
+}
+**What the user
+What the user sees: The spinner disappears and the resul
+ts
+ts panel
+ts panel below
+ts panel below continues
+ts panel below continues showing
+ts panel below continues showing whatever
+ts panel below continues showing whatever analysis
+ts panel below continues showing whatever analysis was a
+lready
+lready on
+lready on screen
+lready on screen —
+lready on screen — either
+lready on screen — either the
+lready on screen — either the previous
+lready on screen — either the previous sample contract
+lready on screen — either the previous sample contract's
+results
+results,
+results, or the stale results
+results, or the stale results from a prior
+results, or the stale results from a prior upload
+results, or the stale results from a prior upload.
+results, or the stale results from a prior upload. Ther
+e
+e is
+e is no error
+─────────────────────────────────��────────────────────────
+e is no error banner
+────────────────────────────���─────────────────────────────
+e is no error banner, no toast
+e is no error banner, no toast, nothing
+e is no error banner, no toast, nothing.
+e is no error banner, no toast, nothing. The user believ
+es
+────────────────────────────────────────────────��─────────
+es the AI has just analysed their document when
+───────────────────────��──────────────────────────────────
+es the AI has just analysed their document when it
+es the AI has just analysed their document when it has a
+ctually
+ctually analysed someone
+ctually analysed someone else's (
+ctually analysed someone else's (or
+────────────────────��─────────────────────────────────────
+ctually analysed someone else's (or nothing
+ctually analysed someone else's (or nothing at
+ctually analysed someone else's (or nothing at all). The
+progress
+progress bar even
+progress bar even reached
+progress bar even reached 100
+progress bar even reached 100 %
+progress bar even reached 100 % before
+lready on screen �� either the previous sample contract's
+progress bar even reached 100 % before the API
+progress bar even reached 100 % before the API call fai
+led,
+led, so the upload *
+led, so the upload *looks
+led, so the upload looks successful
+led, so the upload looks successful.
+**What it should
+What it should do: Set `uploadError
+What it should do: Set uploadError (or a dedicated `
+What it should do: Set uploadError (or a dedicated analy
+sisError state) to a
+sisError state) to a visible
+sisError state) to a visible message
+sisError state) to a visible message such
+sisError state) to a visible message such as "Analysis f
+ailed. Please try again
+ailed. Please try again." and
+ailed. Please try again." and leave
+ailed. Please try again." and leave `
+ailed. Please try again." and leave `analysis
+ailed. Please try again." and leave analysis unchanged
+ailed. Please try again." and leave analysis unchanged r
+ather
+ather than silently keeping
+ather than silently keeping stale data.
+### 🔴 #2 — "
+───────────────────────────────��──────────────────────────
+### 🔴 #2 — "Encrypted &
+─────────────────────────────────────���────────────────────
+### 🔴 #2 — "Encrypted & Private Storage" — documents ar
+e not
+───────────────────────────��──────────────────────────────
+e not stored
+────────────────────────────────────────────────────��─────
+e not stored anywhere
+File: [`ContractAnal
+File: [ContractAnalyzer.tsx](src/
+yzer.
+yzer.tsx:594
+zer.tsx:594)
+**Line
+─────────────────────────────────���────────────────────────
+Line: 594
+```tsx
+<span>Encrypted & Private Storage</span>
+```
+**What the user sees
+What the user sees: The footer
+What the user sees: The footer of the Recent Documents p
+anel
+anel permanently
+anel permanently displays "Encrypted & Private Storage".
+There
+There is no storage
+There is no storage —
+There is no storage — documents exist
+There is no storage — documents exist only in React
+There is no storage — documents exist only in React sta
+te for
+te for the lifetime
+te for the lifetime of the tab
+───────────────────────────────────────────────────��──────
+te for the lifetime of the tab. `
+te for the lifetime of the tab. `DEFAULT
+te for the lifetime of the tab. `DEFAULT_RECENT
+te for the lifetime of the tab. `DEFAULT_RECENT_DOCS
+te for the lifetime of the tab. DEFAULT_RECENT_DOCS
+te for the lifetime of the tab. DEFAULT_RECENT_DOCS is h
+ard
+ard-coded;
+ard-coded; it
+─────────────────────��────────────────────────────────────
+ard-coded; it re
+───────────────────��──────────────────────────────────────
+ard-coded; it resets on
+ard-coded; it resets on every
+ard-coded; it resets on every page load.
+──��───────────────────────────────────────────────────────
+ard-coded; it resets on every page load. Uploaded
+────────────────────────────────────────────────���─────────
+ard-coded; it resets on every page load. Uploaded docume
+nts are added
+nts are added via
+nts are added via `
+───────────────────────────────────���──────────────────────
+nts are added via `set
+──────────────────────────────────���───────────────────────
+nts are added via setRecentDocs
+──────────────────────────���───────────────────────────────
+nts are added via setRecentDocs (
+─────────────────────────��────────────────────────────────
+────────────────────────────────────────────────────���─────
+nts are added via setRecentDocs (line 163
+nts are added via setRecentDocs (line 163) but are
+──────────────────────��───────────────────────────────────
+nts are added via setRecentDocs (line 163) but are gone
+──────────────────���───────────────────────────────────────
+on refresh
+────────────────────────────────��─────────────────────────
+on refresh.
+──────────���───────────────────────────────────────────────
+on refresh. No
+on refresh. No encryption
+─────��────────────────────────────────────────────────────
+────────────���─────────────────────────────────────────────
+on refresh. No encryption of any kind occurs
+on refresh. No encryption of any kind occurs.
+What it should do:
+What it should do: Either implement storage (localStorag
+e with
+e with encryption, or a backend
+e with encryption, or a backend)
+e with encryption, or a backend) or say
+e with encryption, or a backend) or say something
+e with encryption, or a backend) or say something true
+e with encryption, or a backend) or say something true,
+such as "Documents are not
+such as "Documents are not saved
+such as "Documents are not saved between
+such as "Documents are not saved between sessions" or si
+mply
+mply remove
+mply remove the claim
+mply remove the claim.
+### 🔴 #3 — No-
+────────────────────────��─────────────────────────────────
+### 🔴 #3 — No-key fallback returns hard-coded music
+���─────────────────────────────────────────────────────────
+### 🔴 #3 — No-key fallback returns hard-coded music-con
+tract
+tract bo
+tract boilerplate for
+tract boilerplate for *
+tract boilerplate for *any
+tract boilerplate for any contract
+File: [`server
+File: [server.ts](server.ts:
+File: [server.ts](server.ts:48
+File: server.ts (server.ts:48)
+Lines: 47
+────────────────────���─────────────────────────────────────
+Lines: 47–89
+if (!ai) {
+return res.json
+return res.json({
+fall
+fallback
+fallback: true,
+summary
+summary: "Default
+summary: "Default Educational
+summary: "Default Educational Analysis
+summary: "Default Educational Analysis (
+summary: "Default Educational Analysis (AI
+summary: "Default Educational Analysis (AI key
+summary: "Default Educational Analysis (AI key not
+summary: "Default Educational Analysis (AI key not s
+et on
+et on environment
+et on environment)
+et on environment).",
+r
+riskScore
+riskScore: 72
+riskScore: 72,
+deal
+dealType
+────────────────��─────────────────────────────────────────
+dealType: deal
+dealType: dealType ||
+dealType: dealType || "Recording
+dealType: dealType || "Recording Agreement
+──────────────────────────────────────���───────────────────
+dealType: dealType || "Recording Agreement",
+red
+───────────���──────────────────────────────────────────────
+redFlags: [
+{
+{ clause
+{ clause: "Grant
+──────��───────────────────────────────────────────────────
+{ clause: "Grant of Rights
+{ clause: "Grant of Rights &
+{ clause: "Grant of Rights & Territory
+{ clause: "Grant of Rights & Territory", ...
+{ clause: "Grant of Rights & Territory", ... },
+{ clause: "Cross
+{ clause: "Cross-Collateralization", ... }
+...
+],
+});
+What the user sees: If
+────────────────────────────────────────────��─────────────
+What the user sees: If `
+What the user sees: If GEMINI_API_KEY is absent the serv
+er
+er returns a fixed
+er returns a fixed analysis
+er returns a fixed analysis about
+er returns a fixed analysis about "Cross
+er returns a fixed analysis about "Cross-Collateralizati
+on" and
+on" and "Grant of Rights"
+on" and "Grant of Rights" with `
+on" and "Grant of Rights" with riskScore: 72. The
+on" and "Grant of Rights" with riskScore: 72. The UI
+on" and "Grant of Rights" with riskScore: 72. The UI ren
+ders
+ders this ident
+ders this identically to a real AI
+──────────────────────────────────────────────────���───────
+──────────────────────���───────────────────────────────────
+ders this identically to a real AI result
+ders this identically to a real AI result —
+──────���───────────────────────────────────────────────────
+ders this identically to a real AI result — same
+ders this identically to a real AI result — same risk
+ders this identically to a real AI result — same risk sc
+ore gauge
+ore gauge, same red
+ore gauge, same red-
+ore gauge, same red-flag cards
+─────────────────────────────────────────────────��────────
+ore gauge, same red-flag cards.
+ore gauge, same red-flag cards. A
+ore gauge, same red-flag cards. A user
+─────────────────────────────────────────────���────────────
+ore gauge, same red-flag cards. A user who uploads
+ore gauge, same red-flag cards. A user who uploads an
+ore gauge, same red-flag cards. A user who uploads an em
+ployment
+─────────────��────────────────────────────────────────────
+ployment contract,
+ployment contract, a
+ployment contract, a lease
+ployment contract, a lease,
+─���────────────────────────────────────────────────────────
+ployment contract, a lease, or an
+ployment contract, a lease, or an N
+ployment contract, a lease, or an NDA will see music
+───────────��──────────────────────────────────────────────
+ployment contract, a lease, or an NDA will see music-rec
+ording
+──────────────���───────────────────────────────────────────
+ording-
+ording-industry
+────────��─────────────────────────────────────────────────
+ording-industry risk
+ording-industry risk cards
+ording-industry risk cards that
+───���──────────────────────────────────────────────────────
+───────��──────────────────────────────────────────────────
+ording-industry risk cards that bear
+ording-industry risk cards that bear zero
+ording-industry risk cards that bear zero relationship t
+o their
+o their document
+o their document.
+o their document. The `
+o their document. The fallback: true field
+o their document. The fallback: true field is
+───────────────────────────────────────────────���──────────
+o their document. The fallback: true field is returned
+o their document. The fallback: true field is returned i
+n
+n the JSON
+n the JSON but
+──────────────────────────────────────────────────��───────
+n the JSON but the
+────���─────────────────────────────────────────────────────
+n the JSON but the frontend never
+n the JSON but the frontend never reads
+n the JSON but the frontend never reads it and
+n the JSON but the frontend never reads it and never tel
+ls
+ls the user.
+What it should do: The
+──────────────────────────��───────────────────────────────
+What it should do: The client already
+What it should do: The client already receives fallback:
+true but
+true but ign
+true but ignores it entirely
+true but ignores it entirely (
+true but ignores it entirely (nothing
+true but ignores it entirely (nothing in
+true but ignores it entirely (nothing in `
+true but ignores it entirely (nothing in `Cont
+true but ignores it entirely (nothing in ContractAnalyz
+er.tsx checks
+er.tsx checks for it). At
+er.tsx checks for it). At minimum the
+er.tsx checks for it). At minimum the UI should surface
+a banner
+a banner like "AI analysis unavailable —
+a banner like "AI analysis unavailable — showing
+────────���─────────────────────────────────────────────────
+a banner like "AI analysis unavailable — showing generic
+example
+─────────────────────────────────────────────────────────���
+example only
+example only,
+example only, not based
+example only, not based on your document
+example only, not based on your document." Better
+example only, not based on your document." Better still
+, the server should return a `400
+, the server should return a 400
+, the server should return a 400/`503
+───────────────────────────���──────────────────────────────
+, the server should return a 400/503 so
+, the server should return a 400/503 so the client's
+, the server should return a 400/503 so the client's exi
+sting
+sting `throw
+sting `throw new Error("
+sting `throw new Error("Analysis
+sting throw new Error("Analysis failed") path
+sting throw new Error("Analysis failed") path fires
+sting throw new Error("Analysis failed") path fires and
+──────────────────────────────────────────────────────���───
+triggers an
+triggers an error state
+triggers an error state.
+### 🟠
+��─────────────────────────────────────────────────────────
+### 🟠 #4 — Progress bar claims "100 % — Analysis
+### �� #4 — Progress bar claims "100 % — Analysis Comple
+te
+### 🟠 #4 — Progress bar claims "100 % — Analysis Comple
+te!"
+te!" while
+te!" while AI
+te!" while AI call
+te!" while AI call is still
+te!" while AI call is still running
+yzer.tsx:235
+yzer.tsx:235–
+yzer.tsx:235–248
+zer.tsx:235–248)
+Lines: 235
+Lines: 235,
+Lines: 235, 472
+setUploadProgress(100);   // ← extraction is done;
+setUploadProgress(100);   // ← extraction is done; AI ca
+ll has
+ll has not started yet
+handle
+handleRun
+handleRunA
+handleRunAI
+handleRunAIAnalysis(
+handleRunAIAnalysis(text
+handleRunAIAnalysis(text,
+handleRunAIAnalysis(text, doc
+handleRunAIAnalysis(text, docTitle
+handleRunAIAnalysis(text, docTitle);
+handleRunAIAnalysis(text, docTitle);  // ← fire
+handleRunAIAnalysis(text, docTitle);  // ← fire-and-forg
+et async
+et async call
+{uploadProgress
+─────────────────────────────────────────────────────────��
+{uploadProgress < 100 ? "
+───────────────��──────────────────────────────────────────
+{uploadProgress < 100 ? "Uploading & Extracting Clauses.
+.." : "Analysis Complete!"}
+What the user sees: The moment
+──────────────────────────────���───────────────────────────
+What the user sees: The moment PDF
+What the user sees: The moment PDF text extraction finis
+hes the
+hes the progress
+hes the progress bar sn
+hes the progress bar snaps to 100 %
+hes the progress bar snaps to 100 % and the label
+hes the progress bar snaps to 100 % and the label change
+s to **
+─────────────���────────────────────────────────────────────
+s to **"Analysis
+────────────────────────���─────────────────────────────────
+s to "Analysis Complete!" —
+s to "Analysis Complete!" — but
+s to "Analysis Complete!" — but the AI analysis request
+(`/
+(`/api/analyze
+(/api/analyze-contract) has
+(/api/analyze-contract) has only
+(/api/analyze-contract) has only just
+(/api/analyze-contract) has only just been
+(/api/analyze-contract) has only just been fired
+(/api/analyze-contract) has only just been fired and may
+take
+take several more
+take several more seconds (or fail). The spinner
+───────────────────────────────────────���──────────────────
+take several more seconds (or fail). The spinner on
+take several more seconds (or fail). The spinner on the
+"
+"Run
+"Run AI"
+"Run AI" button does
+"Run AI" button does show
+─────────────────────────────────────────���────────────────
+"Run AI" button does show, but the progress
+"Run AI" button does show, but the progress widget
+"Run AI" button does show, but the progress widget at t
+he top
+───────────────────────────────────────��──────────────────
+he top definit
+he top definitively declares
+────��─────────────────────────────────────────────────────
+he top definitively declares completion.
+**What it should do
+What it should do: Keep progress at something like 80 %
+after
+after extraction and
+after extraction and label
+after extraction and label it "
+after extraction and label it "Sending
+after extraction and label it "Sending to AI..." until
+after extraction and label it "Sending to AI..." until `
+after extraction and label it "Sending to AI..." until h
+andleRunAIAnalysis resol
+andleRunAIAnalysis resolves;
+andleRunAIAnalysis resolves; set
+andleRunAIAnalysis resolves; set 100 % /
+andleRunAIAnalysis resolves; set 100 % / "Complete
+andleRunAIAnalysis resolves; set 100 % / "Complete"
+andleRunAIAnalysis resolves; set 100 % / "Complete" only
+on
+on success, or
+on success, or clear
+on success, or clear the progress bar and show the erro
+r on failure.
+### 🟠 #5 — Hard-coded "Recent Documents" displayed as i
+f they
+f they were the
+f they were the user's real files
+yzer.tsx:44–77
+zer.tsx:44–77)
+Lines: 44–77, 549
+const DEFAULT_RECENT_DOCS: RecentDocument[] = [
+{ name: "Employment_Agreement_Executive
+{ name: "Employment_Agreement_Executive.pdf", status:
+"Complete
+"Complete", lastOp
+"Complete", lastOpened: "Today
+"Complete", lastOpened: "Today", file
+"Complete", lastOpened: "Today", fileSize: "
+"Complete", lastOpened: "Today", fileSize: "1.4
+"Complete", lastOpened: "Today", fileSize: "1.4 MB", ...
+},
+{ name: "
+{ name: "Residential_Lease_742_Evergreen.pdf", status:
+"Complete", lastOpened: "5 min
+"Complete", lastOpened: "5 min ago", ... },
+];
+<span>Recent Documents
+<span>Recent Documents</span>  // header implies
+<span>Recent Documents</span>  // header implies user hi
+story
+<span
+<span>5 min ago</span>         // implies
+<span>5 min ago</span>         // implies recency
+What the user sees: The panel is titled "Recent Document
+s" with timestamps
+s" with timestamps like
+s" with timestamps like "5
+s" with timestamps like "5 min ago" and "Today",
+s" with timestamps like "5 min ago" and "Today", strongl
+y impl
+─────────────────��────────────────────────────────────────
+y implying they
+────────────────────────────────────────���─────────────────
+y implying they are the user's own recently opened
+y implying they are the user's own recently opened files
+. They
+. They are
+. They are in
+. They are in fact
+. They are in fact static
+. They are in fact static sample-
+. They are in fact static sample-contract st
+. They are in fact static sample-contract stubs that eve
+ry
+ry user sees
+ry user sees ident
+ry user sees identically. The "5
+ry user sees identically. The "5 min ago" timestamp neve
+r changes. A user who has previously
+─��────────────────────────────────────────────────────────
+r changes. A user who has previously analys
+───────────────────────────────────��──────────────────────
+r changes. A user who has previously analysed real
+r changes. A user who has previously analysed real docum
+ents would naturally
+ents would naturally look
+ents would naturally look here
+ents would naturally look here for them
+ents would naturally look here for them and
+ents would naturally look here for them and find
+ents would naturally look here for them and find them mi
+ssing
+ssing — or worse
+ssing — or worse, believe
+ssing — or worse, believe someone
+ssing — or worse, believe someone else's
+────────────────���─────────────────────────────────────────
+ssing — or worse, believe someone else's documents are
+ssing — or worse, believe someone else's documents are i
+n their account
+n their account.
+What it should do: Label the section "Sample
+───────────────────���──────────────────────────────────────
+What it should do: Label the section "Sample Contracts"
+or "Example
+or "Example Documents
+or "Example Documents",
+or "Example Documents", or persist
+or "Example Documents", or persist genuine
+or "Example Documents", or persist genuine recent-
+or "Example Documents", or persist genuine recent-docume
+nt history per
+nt history per-session
+nt history per-session and
+nt history per-session and make
+nt history per-session and make timestamps
+nt history per-session and make timestamps dynamic. At m
+inimum remove the relative
+inimum remove the relative-
+inimum remove the relative-time strings
+inimum remove the relative-time strings that
+inimum remove the relative-time strings that imply genui
+ne recency.
+### 🟡
+────────────────────────────��─────────────────────────────
+### 🟡 #6 — "Share Analysis" copies the URL but analysis
+is ephemeral; the link shares nothing
+zer.tsx:300–304)
+Lines: 300
+Lines: 300–304
+const handleShareAnalysis = ()
+const handleShareAnalysis = () => {
+navigator.clipboard.writeText(window
+────────────────────────────────────��─────────────────────
+navigator.clipboard.writeText(window.location.href);
+set
+setShareSuccess
+setShareSuccess(true);
+};
+**What the
+What the user sees: Clicking **Share
+What the user sees: Clicking Share Analysis shows a "Lin
+k
+k Copied!" confirmation
+k Copied!" confirmation,
+k Copied!" confirmation, impl
+k Copied!" confirmation, implying the recipient
+k Copied!" confirmation, implying the recipient can
+k Copied!" confirmation, implying the recipient can open
+that
+that URL and see the same
+that URL and see the same analysis. Because
+that URL and see the same analysis. Because all
+──────────────────────────────��───────────────────────────
+that URL and see the same analysis. Because all state
+─────────────────────���────────────────────────────────────
+that URL and see the same analysis. Because all state i
+s in-memory React,
+s in-memory React, anyone
+s in-memory React, anyone who opens
+s in-memory React, anyone who opens the URL sees the def
+ault
+ault sample
+ault sample contract
+ault sample contract analysis,
+ault sample contract analysis, not the user's.
+─────────���────────────────────────────────────────────────
+ault sample contract analysis, not the user's. The featu
+re
+re implies
+re implies persistence
+re implies persistence and
+re implies persistence and sharing that
+re implies persistence and sharing that simply does
+re implies persistence and sharing that simply does not
+exist.
+What it should do: Either
+What it should do: Either implement shar
+What it should do: Either implement shareable analysis I
+Ds (server
+Ds (server-side persistence
+Ds (server-side persistence) or disable
+Ds (server-side persistence) or disable/
+Ds (server-side persistence) or disable/remove the butto
+n,
+n, or replace
+n, or replace the
+n, or replace the tooltip
+n, or replace the tooltip with "
+n, or replace the tooltip with "Copied current
+n, or replace the tooltip with "Copied current page
+n, or replace the tooltip with "Copied current page URL
+──���───────────────────────────────────────────────────────
+—
+— analysis
+— analysis is not
+— analysis is not saved
+— analysis is not saved and
+— analysis is not saved and will
+— analysis is not saved and will not be
+───────���──────────────────────────────────────────────────
+— analysis is not saved and will not be visible
+— analysis is not saved and will not be visible to other
+s."
+### 🟡 #7 — Wrong model name used; model errors
+### 🟡 #7 — Wrong model name used; model errors silently
+swall
+swallowed as
+swallowed as a
+───────────────────────────────���──────────────────────────
+swallowed as a generic
+swallowed as a generic failure
+File: [server.ts](server.ts:99
+File: server.ts (server.ts:99)
+Line: 99
+model: "gemini-3.6-flash",
+**What the user sees (ind
+What the user sees (indirectly): `
+What the user sees (indirectly): `gemini-3.6-flash
+What the user sees (indirectly): gemini-3.6-flash is not
+a real
+a real Gemini model name
+a real Gemini model name (
+a real Gemini model name (likely
+a real Gemini model name (likely meant
+a real Gemini model name (likely meant `gemini-1
+a real Gemini model name (likely meant gemini-1.5-flash
+or `gemini-2.0-flash
+or gemini-2.0-flash). The
+or gemini-2.0-flash). The Gemini SDK
+or gemini-2.0-flash). The Gemini SDK will
+or gemini-2.0-flash). The Gemini SDK will throw a
+or gemini-2.0-flash). The Gemini SDK will throw a model
+-
+-not-found error. This triggers
+-not-found error. This triggers the
+-not-found error. This triggers the `
+-not-found error. This triggers the catch block at
+-not-found error. This triggers the catch block at line
+208,
+208, which returns a `
+208, which returns a `500
+208, which returns a `500 {
+208, which returns a `500 { error: "..."
+208, which returns a 500 { error: "..." } — which
+208, which returns a 500 { error: "..." } — which the cl
+ient
+ient sees as `
+ient sees as `response
+ient sees as `response.ok ===
+ient sees as response.ok === false,
+ient sees as response.ok === false, throws
+ient sees as response.ok === false, throws `
+ient sees as response.ok === false, throws "Analysis fai
+led", and then
+led", and then silently swallows in
+───��──────────────────────────────────────────────────────
+led", and then silently swallows in catch at
+led", and then silently swallows in catch at line 164
+led", and then silently swallows in catch at line 164 (
+led", and then silently swallows in catch at line 164 (i
+ssue
+─────────��────────────────────────────────────────────────
+ssue #1 above),
+ssue #1 above), leaving st
+ssue #1 above), leaving stale results on screen.
+─────���────────────────────────────────────────────────────
+ssue #1 above), leaving stale results on screen. The use
+r just
+r just sees
+r just sees the
+r just sees the spinner van
+──────────────────────────────────────────���───────────────
+r just sees the spinner vanish with no explanation.
+What it should do: Fix the model name to a valid one; an
+d
+d separately
+d separately, fix
+d separately, fix issue
+d separately, fix issue #1 so
+d separately, fix issue #1 so that
+d separately, fix issue #1 so that even
+d separately, fix issue #1 so that even if the model
+d separately, fix issue #1 so that even if the model nam
+e is wrong in
+e is wrong in future
+e is wrong in future, the user
+e is wrong in future, the user gets an
+e is wrong in future, the user gets an honest
+e is wrong in future, the user gets an honest error.

@@ -37,8 +37,9 @@ The Ledger was built to make contract review more accessible by providing:
 - TypeScript
 - Vite
 - Tailwind CSS
-- AI-powered document analysis
-- AMD ROCm / PyTorch GPU acceleration (Hackathon Edition)
+- Express (API server)
+- pdfjs-dist (PDF text extraction, in the browser)
+- Google Gemini via `@google/genai` (contract analysis)
 
 ---
 
@@ -64,6 +65,27 @@ npm install
 npm run dev
 ```
 
+Then open http://localhost:3000.
+
+`GEMINI_API_KEY` is optional for running the UI. Without it the server replies
+with `fallback: true` and the app says plainly that the contract has not been
+read, rather than showing a risk score for a document nothing analysed.
+
+### Verifying it
+
+```bash
+npm run lint         # tsc --noEmit
+npm run test:upload  # upload, extraction and refusal decisions
+npm run test:share   # what the copy button puts on the clipboard
+npm run test:ci      # that CI actually runs every suite above
+npm run build
+```
+
+Every one of these runs on every push and pull request
+(`.github/workflows/ci.yml`). Many of the checks are planted: they are written
+to fail against the version of the code that had the bug, so a regression is a
+named red check rather than a silent pass.
+
 ---
 
 ## Vision
@@ -76,9 +98,16 @@ The Ledger empowers artists to make informed decisions before signing agreements
 
 ## Hackathon
 
-Built for the AMD Radeon AI Hackathon.
+Built for the **IBM Bob Hackathon 2026**.
 
-Leverages AMD ROCm and AI acceleration to improve document analysis performance.
+Contract analysis runs on **Google Gemini** through `@google/genai`. There is no
+Python, no PyTorch and no ROCm anywhere in this repository; an earlier version of
+this section claimed AMD ROCm acceleration, which `docs/IBM_BOB_PHASE1_ASSESSMENT.md`
+had already recorded as false. It is corrected here rather than left on the front
+page of a public repo.
+
+IBM Bob's part in the work is logged, including what it got wrong:
+`docs/BOB_SESSION_2026-10-06_HONESTY_AUDIT.md`.
 
 ---
 

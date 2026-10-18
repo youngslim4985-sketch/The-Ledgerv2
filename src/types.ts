@@ -43,15 +43,27 @@ export interface RecentDocument {
   sampleContractId?: string;
 }
 
+// dealType, keyTerms and fairTerms are OPTIONAL as of 2026-10-11. They were
+// declared required and validateAnalysis never checked them, so a Gemini
+// response missing all three passed validation and the type was asserting
+// something untrue of real data. Requiring them in the validator was the other
+// option and it is the worse one: it would 502 an artist whose contract was
+// read correctly but came back without a label, and refusing to help someone
+// over a missing badge is a worse failure than a blank badge. Every read of
+// the three is guarded; tsc enumerated the sites.
+/** Shown wherever dealType is absent. Named once so the product says the same
+ *  thing in all three places, and so it is never interpolated as "undefined". */
+export const DEAL_TYPE_UNKNOWN = "Not identified";
+
 export interface ContractAnalysis {
   title: string;
-  dealType: string;
+  dealType?: string;
   riskScore: number; // 1 to 100
   summary: string;
   plainEnglishTranslation: string;
-  keyTerms: KeyTerm[];
+  keyTerms?: KeyTerm[];
   redFlags: RedFlag[];
-  fairTerms: FairTerm[];
+  fairTerms?: FairTerm[];
   questionsForAttorney: string[];
   keyClauses?: KeyClause[];
   yourResponsibilities?: string[];

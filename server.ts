@@ -1,3 +1,5 @@
+
+import {validateAnalysis} from "./src/lib/validateAnalysis";
 import express from "express";
 import path from "path";
 import dotenv from "dotenv";
@@ -7,30 +9,56 @@ import { createServer as createViteServer } from "vite";
 dotenv.config();
 
 const app = express();
-const PORT = 3000;
+// Hosts that run this (Vercel, Render, Railway, Fly) inject PORT and expect the
+// app to bind it. Hardcoding 3000 is why this could not deploy to one.
+import { classifyAiError } from "./src/lib/aiError";
+import { chooseAuth, describeAuth } from "./src/lib/aiAuth";
+
+const PORT = Number(process.env.PORT) || 3000;
 
 app.use(express.json({ limit: "10mb" }));
 
 // Initialize Gemini SDK lazily / safely
+let authLogged = false;
+
 function getGeminiClient() {
-  const apiKey = process.env.GEMINI_API_KEY;
-  if (!apiKey) {
-    return null;
+  // Which credential to use is decided in src/lib/aiAuth.ts, not here, so the
+  // rules are testable. Two mechanisms reach two different products: an API key
+  // reaches AI Studio, Application Default Credentials reach Vertex AI. An
+  // organization policy may forbid API keys outright, in which case Vertex is
+  // the only route. Modernization log Entry 10.
+  const auth = chooseAuth(process.env as Record<string, string | undefined>);
+
+  if (!authLogged) {
+    console.log("AI credential: " + describeAuth(auth));
+    authLogged = true;
   }
-  return new GoogleGenAI({
-    apiKey: apiKey,
-    httpOptions: {
-      headers: {
-        "User-Agent": "aistudio-build",
-      },
-    },
-  });
+
+  if (auth.kind === "unconfigured") return null;
+
+  const httpOptions = { headers: { "User-Agent": "aistudio-build" } };
+
+  if (auth.kind === "vertex") {
+    return new GoogleGenAI({
+      vertexai: true,
+      project: auth.project,
+      location: auth.location,
+      httpOptions,
+    });
+  }
+
+  return new GoogleGenAI({ apiKey: auth.apiKey, httpOptions });
 }
 
 // Health check endpoint
 app.get("/api/health", (req, res) => {
   res.json({ status: "ok", app: "THE LEDGER", timestamp: new Date().toISOString() });
 });
+
+// Maximum contract text length accepted by the API (500 000 characters ≈ 500 KB of plain text).
+// This is well above any real-world contract while preventing accidental large-file abuse
+// and keeping AI prompt sizes within a sensible bound.
+const MAX_CONTRACT_TEXT_LENGTH = 500_000;
 
 // API endpoint: Contract AI Analysis & Plain-English Translation
 app.post("/api/analyze-contract", async (req, res) => {
@@ -41,50 +69,19 @@ app.post("/api/analyze-contract", async (req, res) => {
       return res.status(400).json({ error: "contractText parameter is required." });
     }
 
+    if (contractText.length > MAX_CONTRACT_TEXT_LENGTH) {
+      return res.status(413).json({
+        error: `contractText exceeds the maximum allowed length of ${MAX_CONTRACT_TEXT_LENGTH.toLocaleString()} characters. Please shorten the document and try again.`
+      });
+    }
+
     const ai = getGeminiClient();
     
-    // If no Gemini API key is configured, fallback to standard rule-based parsing + clear warning
+    // Do not return generic findings as if they came from the user's contract.
     if (!ai) {
-      return res.json({
-        fallback: true,
-        summary: "Default Educational Analysis (AI key not set on environment).",
-        riskScore: 72,
-        dealType: dealType || "Recording Agreement",
-        redFlags: [
-          {
-            clause: "Grant of Rights & Territory",
-            riskLevel: "HIGH",
-            explanation: "The agreement assigns exclusive rights in perpetuity across the universe.",
-            questionToAsk: "Can we limit the term duration to 5-7 years or restrict territory to specific regions?"
-          },
-          {
-            clause: "Cross-Collateralization",
-            riskLevel: "HIGH",
-            explanation: "Unrecouped balances from previous albums can be deducted from royalties of future successful releases.",
-            questionToAsk: "Can cross-collateralization across un-related projects be removed?"
-          }
-        ],
-        fairTerms: [
-          {
-            clause: "Audit Rights",
-            explanation: "Artist has the right to audit financial records once per year upon 30 days written notice."
-          }
-        ],
-        plainEnglishTranslation: "This contract grants the label broad control over your masters and unrecouped debt balances. Ensure you review royalty rate definitions closely.",
-        rightsGraph: {
-          nodes: [
-            { id: "artist", label: "Artist (Creator)", role: "Creator", share: "15% - 20%" },
-            { id: "label", label: "Record Label", role: "Master Owner", share: "80% - 85%" },
-            { id: "publisher", label: "Music Publisher", role: "Composition Manager", share: "50% Co-Pub" }
-          ]
-        },
-        revenueWaterfallPreview: {
-          grossRevenue: 100000,
-          distributionFee: 15000,
-          labelGross: 85000,
-          advanceRecoupment: 25000,
-          artistNet: 9000
-        }
+      return res.status(503).json({
+        error: "Contract analysis is unavailable because the AI service is not configured.",
+        code: "AI_SERVICE_NOT_CONFIGURED"
       });
     }
 
@@ -201,13 +198,45 @@ Do NOT give formal legal advice; present educational guidance and key questions 
         }
       }
     });
+    const resultText = response.text;
 
-    const resultText = response.text || "{}";
-    const jsonResult = JSON.parse(resultText);
-    res.json(jsonResult);
+    if (!resultText || !resultText.trim()) {
+      return res.status(502).json({
+        error: "AI service returned an empty response."
+      });
+    }
+
+    let jsonResult;
+
+    try {
+      jsonResult = JSON.parse(resultText);
+    } catch {
+      console.error("AI returned malformed JSON.");
+      return res.status(502).json({
+        error: "AI service returned an invalid response."
+      });
+    }
+
+    const validation = validateAnalysis(jsonResult);
+
+    if (validation.ok === false) {
+      console.error(
+        "AI response failed validation:",
+        validation.reason
+      );
+
+      return res.status(502).json({
+        error: "AI service returned an invalid analysis response."
+      });
+    }
+
+    return res.json(jsonResult);
   } catch (err: any) {
+    // The provider's own text goes to the server log, where it is useful, and
+    // never to the browser. See modernization log Entry 9.
     console.error("Error analyzing contract:", err);
-    res.status(500).json({ error: err.message || "Failed to analyze contract with AI." });
+    const verdict = classifyAiError(err);
+    res.status(verdict.status).json({ error: verdict.message, code: verdict.code });
   }
 });
 
@@ -237,7 +266,8 @@ app.post("/api/ask-legal-assistant", async (req, res) => {
     res.json({ answer: response.text || "No response received." });
   } catch (err: any) {
     console.error("Error in AI Q&A:", err);
-    res.status(500).json({ error: err.message || "Failed to answer question." });
+    const verdict = classifyAiError(err);
+    res.status(verdict.status).json({ error: verdict.message, code: verdict.code });
   }
 });
 
@@ -329,8 +359,13 @@ async function startServer() {
     });
   }
 
-  app.listen(PORT, "0.0.0.0", () => {
-    console.log(`THE LEDGER server listening on http://0.0.0.0:${PORT}`);
+  // HOST is read, not hardcoded, for the same reason PORT is: a host that
+  // fronts this with a reverse proxy wants it on loopback only, and a host
+  // that exposes it directly wants 0.0.0.0. Hardcoding either one is what
+  // made this undeployable before.
+  const HOST = process.env.HOST || "0.0.0.0";
+  app.listen(PORT, HOST, () => {
+    console.log(`THE LEDGER server listening on http://${HOST}:${PORT}`);
   });
 }
 

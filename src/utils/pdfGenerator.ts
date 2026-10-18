@@ -1,5 +1,5 @@
 import jsPDF from "jspdf";
-import { ContractAnalysis } from "../types";
+import { ContractAnalysis, DEAL_TYPE_UNKNOWN } from "../types";
 
 export interface RiskExportModel {
   score: number;
@@ -139,7 +139,7 @@ export function generateContractPDF(analysis: ContractAnalysis): void {
   doc.setFont("helvetica", "normal");
   doc.setFontSize(9);
   doc.setTextColor(COLOR_SLATE_600[0], COLOR_SLATE_600[1], COLOR_SLATE_600[2]);
-  doc.text(`Category / Deal Type: ${analysis.dealType}`, margin + 15, y + 45);
+  doc.text(`Category / Deal Type: ${analysis.dealType || DEAL_TYPE_UNKNOWN}`, margin + 15, y + 45);
 
   // Risk Badge on Right using buildRiskExportModel
   const riskExport = buildRiskExportModel(analysis);

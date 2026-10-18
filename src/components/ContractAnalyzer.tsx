@@ -1,6 +1,13 @@
 import React, { useState, useRef } from "react";
-import { SAMPLE_CONTRACTS } from "../data/sampleContracts";
-import { ContractAnalysis, SampleContract, RecentDocument, KeyClause } from "../types";
+import * as pdfjsLib from "pdfjs-dist";
+import workerUrl from "pdfjs-dist/build/pdf.worker.min.mjs?url";
+pdfjsLib.GlobalWorkerOptions.workerSrc = workerUrl;
+import { extractPdfText, PasswordProtectedError } from "../lib/extractPdfText";
+import { mayShowAnalysis, judgeAnalysisResponse, stageLabel, stagePercent, preflight, checkMagic, judgeText, judgeError } from "../lib/uploadDecision";
+import { analysisToText } from "../lib/analysisText";
+import type { Stage } from "../lib/uploadDecision";
+import { SAMPLE_CONTRACTS, DEFAULT_SAMPLE } from "../data/sampleContracts";
+import { ContractAnalysis, SampleContract, RecentDocument, KeyClause, DEAL_TYPE_UNKNOWN } from "../types";
 import { generateContractPDF } from "../utils/pdfGenerator";
 import {
   Sparkles,
@@ -37,56 +44,47 @@ interface ContractAnalyzerProps {
   onNavigateToRightsGraph: (dealType: string) => void;
 }
 
-const DEFAULT_RECENT_DOCS: RecentDocument[] = [
-  {
-    id: "employment-agreement",
-    name: "Employment_Agreement_Executive.pdf",
-    status: "Complete",
-    lastOpened: "Today",
-    fileSize: "1.4 MB",
-    sampleContractId: "employment-agreement"
-  },
-  {
-    id: "residential-lease",
-    name: "Residential_Lease_742_Evergreen.pdf",
-    status: "Complete",
-    lastOpened: "5 min ago",
-    fileSize: "2.1 MB",
-    sampleContractId: "residential-lease"
-  },
-  {
-    id: "non-disclosure-agreement",
-    name: "Mutual_NDA_Nexus_Innovations.pdf",
-    status: "Complete",
-    lastOpened: "Yesterday",
-    fileSize: "890 KB",
-    sampleContractId: "non-disclosure-agreement"
-  },
-  {
-    id: "recording-360-deal",
-    name: "Apex_Sound_360_Recording.pdf",
-    status: "Complete",
-    lastOpened: "2 days ago",
-    fileSize: "3.2 MB",
-    sampleContractId: "recording-360-deal"
-  }
-];
+/**
+ * EMPTY, AND IT HAS TO BE.
+ *
+ * This held four invented PDFs — Employment_Agreement_Executive.pdf "1.4 MB"
+ * "Today", Residential_Lease_742_Evergreen.pdf "2.1 MB" "5 min ago", and two
+ * more — under a heading that reads "Recent Documents". A first-time visitor
+ * was being told they had uploaded four contracts, one of them five minutes
+ * ago, with file sizes for documents that have never existed.
+ *
+ * Each one actually opened a SAMPLE contract, and the Sample Contracts Library
+ * further down the page already offers every one of them honestly. So nothing
+ * is lost by removing them, and a fabricated upload history goes with it.
+ *
+ * The list fills from real uploads, which the code already does. Until then it
+ * is empty, and says so. Found by IBM Bob 2026-10-06 (#5).
+ */
+const DEFAULT_RECENT_DOCS: RecentDocument[] = [];
 
 export const ContractAnalyzer: React.FC<ContractAnalyzerProps> = ({
   onNavigateToWaterfall,
   onNavigateToRightsGraph
 }) => {
-  const [selectedSample, setSelectedSample] = useState<SampleContract>(SAMPLE_CONTRACTS[0]);
-  const [inputText, setInputText] = useState<string>(SAMPLE_CONTRACTS[0].fullText);
+  const [selectedSample, setSelectedSample] = useState<SampleContract>(DEFAULT_SAMPLE);
+  const [inputText, setInputText] = useState<string>(DEFAULT_SAMPLE.fullText);
   const [isCustomText, setIsCustomText] = useState<boolean>(false);
-  const [analysis, setAnalysis] = useState<ContractAnalysis>(SAMPLE_CONTRACTS[0].analysis);
+  const [analysis, setAnalysis] = useState<ContractAnalysis>(DEFAULT_SAMPLE.analysis);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   
   // Upload State
   const [isDragging, setIsDragging] = useState<boolean>(false);
   const [uploadProgress, setUploadProgress] = useState<number | null>(null);
+  // The stage the bar is allowed to describe. See stageLabel in lib/uploadDecision.ts.
+  const [uploadStage, setUploadStage] = useState<Stage | null>(null);
   const [uploadedFileName, setUploadedFileName] = useState<string | null>(null);
   const [uploadedFileSize, setUploadedFileSize] = useState<string | null>(null);
+  const [uploadError, setUploadError] = useState<string | null>(null);
+  // Whether the CURRENT upload has produced an analysis. Without this the
+  // results panel keeps rendering `analysis`, which starts life as
+  // the default sample's analysis -- so a refused scan was shown an error and,
+  // directly beneath it, a full risk breakdown of a sample Employment Agreement.
+  const [hasAnalysedUpload, setHasAnalysedUpload] = useState<boolean>(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const uploadZoneRef = useRef<HTMLDivElement>(null);
   const sampleSectionRef = useRef<HTMLDivElement>(null);
@@ -119,9 +117,12 @@ export const ContractAnalyzer: React.FC<ContractAnalyzerProps> = ({
     setSelectedSample(sample);
     setInputText(sample.fullText);
     setAnalysis(sample.analysis);
+    setUploadError(null);
+    setHasAnalysedUpload(false);
     setIsCustomText(false);
     setUploadedFileName(null);
     setUploadProgress(null);
+    setUploadStage(null);
   };
 
   const toggleClauseExpand = (title: string) => {
@@ -144,8 +145,24 @@ export const ContractAnalyzer: React.FC<ContractAnalyzerProps> = ({
         throw new Error("Analysis failed");
       }
 
-      const result: ContractAnalysis = await response.json();
+      const body: unknown = await response.json();
+
+      // The server says when it has made the analysis up. Until now nothing
+      // read that, so a fabricated risk score rendered as the artist's own.
+      const verdict = judgeAnalysisResponse(body);
+      if (verdict) {
+        setUploadError(verdict.message);
+        setHasAnalysedUpload(false);
+        return;
+      }
+
+      const result = body as ContractAnalysis;
       setAnalysis(result);
+      setHasAnalysedUpload(true);
+      // The only place "analysis complete" becomes true, and it is after the
+      // analysis actually came back and survived judgeAnalysisResponse.
+      setUploadStage("analysed");
+      setUploadProgress(stagePercent("analysed"));
 
       // Add to recent docs
       const newDoc: RecentDocument = {
@@ -157,60 +174,123 @@ export const ContractAnalyzer: React.FC<ContractAnalyzerProps> = ({
       };
       setRecentDocs((prev) => [newDoc, ...prev.filter((d) => d.name !== newDoc.name)]);
     } catch (err) {
+      // Was console.error only, so a failed analysis left the PREVIOUS result
+      // on screen with no indication anything had gone wrong. The refusal has
+      // to reach the artist, not the console.
       console.error("AI Analysis Error:", err);
+      setUploadError(
+        "The analysis could not be completed, so nothing below has been assessed. Please try again."
+      );
+      setHasAnalysedUpload(false);
     } finally {
       setIsLoading(false);
       setUploadProgress(null);
+    setUploadStage(null);
     }
   };
 
-  // Simulate file upload and text extraction
-  const handleFileUpload = (file: File) => {
+  // Handle file upload: pre-flight checks, real extraction, visible errors
+  /**
+   * One exit for every refused upload.
+   *
+   * Each refusal site set the error, and some also cleared the progress and file
+   * name separately. None cleared the text box, which still held the default
+   * sample's text, so an analysis of a document the artist never uploaded sat
+   * one click behind the Run button. That is the ungated results panel again
+   * with one interaction in front of it.
+   *
+   * Re-applied 2026-10-14. The nine-branch merge kept main's component and so
+   * dropped e04d510, which had fixed this once already. Modernization log
+   * Entry 11.
+   */
+  const refuseUpload = (message: string) => {
+    setUploadError(message);
+    setUploadProgress(null);
+    setUploadStage(null);
+    setUploadedFileName(null);
+    setUploadedFileSize(null);
+    setInputText("");
+  };
+
+  const handleFileUpload = async (file: File) => {
     if (!file) return;
+
+    // Clear any previous error, and retract the previous document's findings.
+    setUploadError(null);
+    setHasAnalysedUpload(false);
+
+    // Type, size and magic bytes are decided by uploadDecision, not re-stated
+    // here. Modernization log Entry 8: these rules were extracted and tested
+    // once before while the component kept its own copies, so the suite
+    // exercised a parallel implementation and could not fail on a real change.
+    const verdict = preflight(file.name, file.size, file.type);
+    if (verdict.kind === "refuse") {
+      refuseUpload(verdict.message);
+      return;
+    }
+    const isPdf = verdict.route === "pdf";
+    const isTxt = !isPdf;
+
+    if (isPdf) {
+      const header = await file.slice(0, 5).text();
+      const magic = checkMagic(header);
+      if (magic && magic.kind === "refuse") {
+        refuseUpload(magic.message);
+        return;
+      }
+    }
 
     setUploadedFileName(file.name);
     const sizeInMb = (file.size / (1024 * 1024)).toFixed(1);
     setUploadedFileSize(`${sizeInMb} MB`);
-    setUploadProgress(10);
+    setUploadStage("reading");
+    setUploadProgress(stagePercent("reading"));
 
-    // Simulate progress ticks
-    let currentProgress = 10;
-    const interval = setInterval(() => {
-      currentProgress += 25;
-      setUploadProgress(currentProgress);
-      if (currentProgress >= 100) {
-        clearInterval(interval);
-        
-        // Read file if text/txt/json, or simulate extraction for pdf/docx
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          const text = e.target?.result as string;
-          if (text && text.trim().length > 50) {
+    const docTitle = file.name.replace(/\.[^/.]+$/, "");
+
+    try {
+      if (isTxt) {
+        // Plain text: read directly
+        await new Promise<void>((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            const text = (e.target?.result as string) ?? "";
+            setUploadStage("analysing");
+            setUploadProgress(stagePercent("analysing"));
             setInputText(text);
             setIsCustomText(true);
-            handleRunAIAnalysis(text, "Uploaded Document");
-          } else {
-            // Default sample text if PDF binary parsing isn't plain text
-            const fallbackText = `UPLOADED CONTRACT: ${file.name}\n\n1. TERMS & DURATION\nThis agreement shall remain in force for 24 months. Includes auto-renewal unless cancelled 60 days in advance.\n\n2. PAYMENT & FEES\nPayment due within Net 60 days following invoice submission. Late fees of 1.5% apply.\n\n3. LIABILITY & NON-COMPETE\nNeither party shall be subject to liability caps for confidentiality breach. Non-compete applies across North America for 24 months post-termination.`;
-            setInputText(fallbackText);
-            setIsCustomText(true);
-            handleRunAIAnalysis(fallbackText, "Uploaded Agreement");
-          }
-        };
-
-        if (file.type.includes("text") || file.name.endsWith(".txt")) {
+            handleRunAIAnalysis(text, docTitle);
+            resolve();
+          };
+          reader.onerror = () => reject(new Error("Could not read file."));
           reader.readAsText(file);
-        } else {
-          // Trigger fallback extraction
-          setTimeout(() => {
-            const simulatedText = `ANALYSIS OF UPLOADED CONTRACT (${file.name}):\n\n1. PAYMENT & COMPENSATION\nInvoices payable under Net 60 terms. Late payment subject to interest.\n\n2. TERMINATION & RENEWAL\nAgreement renews automatically for additional 12-month periods unless 60 days advance written notice is provided.\n\n3. INTELLECTUAL PROPERTY & LIABILITY\nAll IP generated constitutes work made for hire. Uncapped liability applies for confidentiality breaches. Non-compete enforced for 24 months post-termination.`;
-            setInputText(simulatedText);
-            setIsCustomText(true);
-            handleRunAIAnalysis(simulatedText, file.name.replace(/\.[^/.]+$/, ""));
-          }, 300);
+        });
+      } else {
+        // PDF: real extraction via pdfjs-dist
+        setUploadStage("extracting");
+        setUploadProgress(stagePercent("extracting"));
+        const text = await extractPdfText(file);
+        setUploadStage("checking");
+        setUploadProgress(stagePercent("checking"));
+
+        // 4. Empty / image-only PDF
+        const tooShort = judgeText(text);
+        if (tooShort && tooShort.kind === "refuse") {
+          refuseUpload(tooShort.message);
+          return;
         }
+
+        setInputText(text);
+        setIsCustomText(true);
+        handleRunAIAnalysis(text, docTitle);
       }
-    }, 200);
+    } catch (err: unknown) {
+      // Encrypted / password-protected PDF
+      const failure = judgeError(err instanceof Error ? err.name : "UnknownError");
+      if (failure.kind === "refuse") {
+        refuseUpload(failure.message);
+      }
+    }
   };
 
   const handleDragOver = (e: React.DragEvent) => {
@@ -232,6 +312,7 @@ export const ContractAnalyzer: React.FC<ContractAnalyzerProps> = ({
 
   const handleCancelUpload = () => {
     setUploadProgress(null);
+    setUploadStage(null);
     setUploadedFileName(null);
     setUploadedFileSize(null);
   };
@@ -251,7 +332,8 @@ export const ContractAnalyzer: React.FC<ContractAnalyzerProps> = ({
   };
 
   const handleShareAnalysis = () => {
-    navigator.clipboard.writeText(window.location.href);
+    // Was window.location.href, which carries none of this. See lib/analysisText.ts.
+    navigator.clipboard.writeText(analysisToText(analysis));
     setShareSuccess(true);
     setTimeout(() => setShareSuccess(false), 2000);
   };
@@ -314,7 +396,7 @@ export const ContractAnalyzer: React.FC<ContractAnalyzerProps> = ({
           </div>
 
           <h1 className="text-3xl sm:text-4xl font-black text-slate-100 tracking-tight font-mono">
-            Understand any contract in minutes—not hours.
+            Understand any contract in minutes, not hours.
           </h1>
 
           <p className="text-base text-slate-300 leading-relaxed max-w-2xl">
@@ -356,13 +438,13 @@ export const ContractAnalyzer: React.FC<ContractAnalyzerProps> = ({
               <Upload className="w-4 h-4 text-amber-400" />
               <span>Upload Contract Document</span>
             </h2>
-            <span className="text-xs text-slate-400">PDF • DOCX • TXT</span>
+            <span className="text-xs text-slate-400">PDF • TXT</span>
           </div>
 
           <input
             ref={fileInputRef}
             type="file"
-            accept=".pdf,.docx,.doc,.txt"
+            accept=".pdf,.txt"
             onChange={(e) => e.target.files && e.target.files[0] && handleFileUpload(e.target.files[0])}
             className="hidden"
           />
@@ -391,7 +473,7 @@ export const ContractAnalyzer: React.FC<ContractAnalyzerProps> = ({
             </p>
 
             <div className="inline-flex items-center space-x-2 text-[11px] text-slate-500 bg-slate-900 px-3 py-1.5 rounded-lg border border-slate-800 font-mono">
-              <span>Supports PDF • DOCX • TXT</span>
+              <span>Supports PDF • TXT</span>
             </div>
           </div>
 
@@ -422,9 +504,24 @@ export const ContractAnalyzer: React.FC<ContractAnalyzerProps> = ({
               </div>
 
               <div className="flex justify-between items-center text-[11px] text-slate-400 font-mono">
-                <span>{uploadProgress < 100 ? "Uploading & Extracting Clauses..." : "Analysis Complete!"}</span>
+                <span>{uploadStage ? stageLabel(uploadStage) : "Working..."}</span>
                 <span>{uploadProgress}%</span>
               </div>
+            </div>
+          )}
+
+          {/* Upload Error */}
+          {uploadError && (
+            <div className="flex items-start space-x-3 p-4 rounded-xl bg-red-950/40 border border-red-500/40 text-red-300 animate-fadeIn">
+              <AlertTriangle className="w-4 h-4 mt-0.5 shrink-0 text-red-400" />
+              <p className="text-xs font-mono leading-relaxed">{uploadError}</p>
+              <button
+                onClick={() => setUploadError(null)}
+                className="ml-auto shrink-0 text-red-400 hover:text-red-200"
+                aria-label="Dismiss error"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
             </div>
           )}
 
@@ -497,6 +594,14 @@ export const ContractAnalyzer: React.FC<ContractAnalyzerProps> = ({
                 <span className="col-span-3 text-right">Opened</span>
               </div>
 
+              {recentDocs.length === 0 && (
+                <div className="p-6 text-center text-[11px] text-slate-400 font-mono leading-relaxed">
+                  No documents yet.
+                  <br />
+                  Contracts you upload appear here.
+                </div>
+              )}
+
               {recentDocs.map((doc) => (
                 <button
                   key={doc.id}
@@ -529,14 +634,20 @@ export const ContractAnalyzer: React.FC<ContractAnalyzerProps> = ({
           </div>
 
           <div className="pt-4 border-t border-slate-800 text-[11px] text-slate-400 flex items-center justify-between font-mono">
-            <span>Encrypted & Private Storage</span>
+            <span>Sent for analysis. Not stored.</span>
             <span className="text-amber-400 font-semibold">Ready for Analysis</span>
           </div>
         </div>
 
       </div>
 
-      {/* AI ANALYSIS RESULTS SECTION */}
+      {/* AI ANALYSIS RESULTS SECTION
+          Gated. A refusal must show no findings: the validation above correctly
+          declines to analyse a scan, but this panel rendered regardless, and
+          `analysis` holds the last successful read (initially a sample). The
+          artist was told "no extractable text found" and shown a risk score
+          anyway. See mayShowAnalysis in lib/uploadDecision.ts. */}
+      {mayShowAnalysis({ uploadError, hasAnalysedUpload, isCustomText }) && (
       <div className="bg-slate-900/90 rounded-3xl p-6 sm:p-8 border border-slate-800 shadow-2xl space-y-8">
 
         {/* ANALYSIS HEADER & RISK SCORE GAUGE */}
@@ -544,7 +655,7 @@ export const ContractAnalyzer: React.FC<ContractAnalyzerProps> = ({
           <div className="space-y-1 max-w-2xl">
             <div className="flex items-center space-x-2">
               <span className="px-2.5 py-0.5 rounded bg-amber-500/10 text-amber-400 text-xs font-mono font-bold uppercase border border-amber-500/20">
-                {analysis.dealType}
+                {analysis.dealType || DEAL_TYPE_UNKNOWN}
               </span>
               <span className="text-xs text-slate-400 font-mono">• AI Clause Dissection</span>
             </div>
@@ -864,14 +975,14 @@ export const ContractAnalyzer: React.FC<ContractAnalyzerProps> = ({
               className="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold flex items-center space-x-2 transition-all border border-slate-700 cursor-pointer"
             >
               {shareSuccess ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Share2 className="w-3.5 h-3.5 text-blue-400" />}
-              <span>{shareSuccess ? "Link Copied!" : "Share Analysis"}</span>
+              <span>{shareSuccess ? "Analysis copied" : "Copy analysis"}</span>
             </button>
           </div>
 
           {/* Next Tool Navigation */}
           <div className="flex items-center space-x-3 w-full md:w-auto justify-end">
             <button
-              onClick={() => onNavigateToRightsGraph(analysis.dealType)}
+              onClick={() => onNavigateToRightsGraph(analysis.dealType ?? "")}
               className="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-amber-300 text-xs font-bold flex items-center space-x-2 transition-all border border-slate-700 cursor-pointer"
             >
               <span>View Rights Graph</span>
@@ -890,6 +1001,7 @@ export const ContractAnalyzer: React.FC<ContractAnalyzerProps> = ({
         </div>
 
       </div>
+      )}
 
       {/* SAMPLE CONTRACTS GRID SECTION */}
       <div ref={sampleSectionRef} className="space-y-6 pt-4">

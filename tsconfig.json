@@ -10,6 +10,23 @@
       "DOM.Iterable"
     ],
     "skipLibCheck": true,
+    // Enabled 2026-10-11 on measurement. Full --strict produces exactly 2
+    // errors here and neither is a real defect (a recharts Formatter mismatch
+    // and a missing @types/react-dom); strictNullChecks alone produces ZERO.
+    // Free, so it is on.
+    //
+    // WHAT IT DOES NOT DO, stated because the first version of this comment
+    // claimed the opposite and was wrong. It does NOT catch the defect that
+    // prompted it. Three plants, run against this config:
+    //   `${analysis.dealType}` in a template literal   NOT caught
+    //   fn(analysis.dealType) into (s: string)         CAUGHT, TS2345
+    //   {analysis.dealType} in JSX                     NOT caught
+    // undefined is a legal interpolation and a legal JSX child, so the two
+    // paths that actually reach a human eye are invisible to the compiler.
+    // The PDF that said "Category / Deal Type: undefined" would still compile
+    // clean today. Only the source check in validateAnalysis.review.test.ts
+    // covers those. Keep both; neither is sufficient alone.
+    "strictNullChecks": true,
     "moduleResolution": "bundler",
     "isolatedModules": true,
     "moduleDetection": "force",

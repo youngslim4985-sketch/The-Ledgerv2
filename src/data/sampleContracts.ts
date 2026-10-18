@@ -1218,3 +1218,20 @@ This Agreement shall run on a month-to-month basis. Artist may terminate distrib
     }
   }
 ];
+
+/**
+ * The sample shown before the user uploads anything.
+ *
+ * The Ledger is a music rights product, so the first thing an artist sees is a
+ * music contract rather than an executive employment agreement. Resolved by id
+ * and not by index, so reordering the library above cannot silently change what
+ * the application opens on.
+ */
+export const DEFAULT_SAMPLE_ID = "recording-360-deal";
+
+export const DEFAULT_SAMPLE_INDEX: number = Math.max(
+  0,
+  SAMPLE_CONTRACTS.findIndex((c) => c.id === DEFAULT_SAMPLE_ID)
+);
+
+export const DEFAULT_SAMPLE: SampleContract = SAMPLE_CONTRACTS[DEFAULT_SAMPLE_INDEX];
