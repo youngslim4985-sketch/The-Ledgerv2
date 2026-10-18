@@ -108,14 +108,27 @@ progress, add DOCX while refusing legacy .doc rather than guessing at it.
 **12. Close.** "An artist should know what they are signing." Repo link, demo
 video link, live demo link.
 
-## Open placeholders
+## Both placeholders are resolved, 2026-10-18
 
-Both are separate required deliverables in their own right, so they have to
-exist regardless of the deck.
+Both were separate required deliverables in their own right. Both now exist and
+were verified rather than assumed.
 
-- **`[YouTube link]`** — rule 6.3.5. Goes on slide 12 once the video is up.
-- **`[deployed URL]`** — rule 6.3.6, "the URL to the live working environment".
-  Goes on slide 12 and in the video's end card.
+- **Rule 6.3.5, the demo video** — https://youtu.be/BXjVQ60cC4I
+  Public on the Zealous Mirror channel, 3:25. Confirmed by reading the live
+  page back: `isPrivate: false`, `isUnlisted: false`, copyright checks complete
+  with no issues.
+- **Rule 6.3.6, the live working environment** — http://65.108.146.243/
+  Served by nginx on a Hetzner VPS under systemd, with the app port closed to
+  the internet so nginx is the only route in. Confirmed from outside the host:
+  `/`, `/api/health`, `/api/rights` and `/api/waterfall` all return 200.
+
+Both go on slide 12, and both are in the video's end card.
+
+**One limit stated plainly:** the deployed service runs without AI credentials,
+so `POST /api/analyze-contract` returns `503 AI_SERVICE_NOT_CONFIGURED`. The
+live analysis shown in section 3 of the video was filmed against a development
+build running on Vertex. Do not describe the deployed URL as performing live
+analysis until a key is placed in the server environment.
 
 ## Numbers used, and where each came from
 

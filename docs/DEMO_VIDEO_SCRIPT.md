@@ -34,7 +34,7 @@ assumed.
 | 4 Honest no | ready once the server is up | the refusal is decided in the browser, so it needs the app running but not the key. Film it in the same sitting as section 3 and in the same window, or the framing will not match. |
 | 5 How Bob was used | **ready** | both documents exist on `james/modernization-log`. |
 | 6 Verification | **ready** | all six suites now run in one checkout on `james/integration`. The two-branch workaround below is obsolete. |
-| 7 Close | blocked | the deployed URL (rule 6.3.6) does not exist yet. |
+| 7 Close | **shot 2026-10-18** | filmed against the live deployment at http://65.108.146.243/. Shows the app, the Rights Graph and the Revenue Waterfall, then the end card. |
 
 The key is not something that can be set for you. It is a credential and it has
 to go into the server's own environment by hand. There is no `.env` in the repo
@@ -171,9 +171,13 @@ branches, said out loud as two branches. Do not imply one checkout.
 - **Watch it once at full length against a timer before uploading.** Three
   minutes is a rule, not a guideline.
 
-## Still needed from elsewhere
+## Nothing is still needed from elsewhere, 2026-10-18
 
-- The **deployed URL** (rule 6.3.6, a separate deliverable). Section 7's end
-  card and the deck's closing slide both have a placeholder for it.
-- The **YouTube link**, once uploaded, goes in the deck's closing slide and the
-  portal submission.
+- **Deployed URL** (rule 6.3.6): http://65.108.146.243/ — live, and in section 7's end card.
+- **YouTube link** (rule 6.3.5): https://youtu.be/BXjVQ60cC4I — public, 3:25.
+
+Final cut: `THE_LEDGER_SUBMISSION_20261018_324.mp4`, **3:24.48**, 1920x1080,
+16.6 MB. Section 5 was cut to bring it under the three minute thirty mark.
+Removing it also removed the section Terrance named as his favourite, the
+corrections to Bob's initial findings; he was told so in writing and offered a
+middle option.
